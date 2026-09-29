@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand-50: #fff1f2;
+  --color-brand-100: #ffe4e6;
+  --color-brand-500: #f43f5e;
+  --color-brand-600: #e11d48;
+  --color-brand-700: #be123c;
+  --color-brand-900: #881337;
+
+  --color-slate-850: #151e2e;
+
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+}
+
 @layer utilities {
   .mic-active {
     animation: pulse 1.5s infinite;
@@ -11,4 +25,95 @@
   0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
   70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
   100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.hero-gradient {
+  background:
+    radial-gradient(circle at top right, #ffe4e6 0%, transparent 40%),
+    radial-gradient(circle at bottom left, #f1f5f9 0%, transparent 40%);
+}
+
+.feature-card:hover .icon-bg {
+  background-color: #e11d48;
+  color: white;
+  transform: scale(1.1);
+}
+
+.tech-card {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+}
+
+.tech-card:hover {
+  border-color: #e11d48;
+  transform: translateY(-5px);
+}
+
+.check-list li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.check-list li::before {
+  content: "\f00c";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 0;
+  color: #e11d48;
+}
+
+/* Toggle Switch */
+.toggle-checkbox:checked {
+  right: 0;
+  border-color: #e11d48;
+}
+
+.toggle-checkbox:checked + .toggle-label {
+  background-color: #e11d48;
+}
+
+/* Modal Animation */
+.modal {
+  transition: opacity 0.25s ease;
+}
+
+body.modal-active {
+  overflow-x: hidden;
+  overflow-y: visible !important;
+}
+
+/* Hide scrollbar for tabs on mobile */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* For animate-fade-in */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
 }
