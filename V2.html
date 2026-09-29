@@ -1,0 +1,1284 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Krimsona | The Voice-Native Workspace</title>
+  <meta name="description"
+    content="Stop typing. Start doing. Krimsona is the AI-powered project manager that listens, logs, and organizes your life using local storage and voice intelligence." />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Inter & Space Grotesk -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            display: ["Space Grotesk", "sans-serif"],
+          },
+          colors: {
+            brand: {
+              50: "#fff1f2",
+              100: "#ffe4e6",
+              500: "#f43f5e", // Rose-500
+              600: "#e11d48", // Rose-600 (Crimson)
+              700: "#be123c",
+              900: "#881337",
+            },
+            slate: {
+              850: '#151e2e',
+              900: '#0f172a',
+              950: '#020617',
+            }
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .hero-gradient {
+      background:
+        radial-gradient(circle at top right, #ffe4e6 0%, transparent 40%),
+        radial-gradient(circle at bottom left, #f1f5f9 0%, transparent 40%);
+    }
+
+    .feature-card:hover .icon-bg {
+      background-color: #e11d48;
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .tech-card {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+    }
+
+    .tech-card:hover {
+      border-color: #e11d48;
+      transform: translateY(-5px);
+    }
+
+    .check-list li {
+      position: relative;
+      padding-left: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .check-list li::before {
+      content: "\f00c";
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      position: absolute;
+      left: 0;
+      color: #e11d48;
+    }
+
+    /* Toggle Switch */
+    .toggle-checkbox:checked {
+      right: 0;
+      border-color: #e11d48;
+    }
+
+    .toggle-checkbox:checked+.toggle-label {
+      background-color: #e11d48;
+    }
+
+    /* Modal Animation */
+    .modal {
+      transition: opacity 0.25s ease;
+    }
+
+    body.modal-active {
+      overflow-x: hidden;
+      overflow-y: visible !important;
+    }
+
+    /* Hide scrollbar for tabs on mobile */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+
+<body class="text-slate-800 antialiased bg-white">
+  <!-- NAVIGATION -->
+  <nav class="fixed w-full z-50 glass-nav border-b border-slate-100 transition-all duration-300" id="navbar">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        <!-- Logo -->
+        <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0, 0)">
+          <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white">
+            <i class="fas fa-wave-square"></i>
+          </div>
+          <span class="font-display font-bold text-2xl tracking-tight text-slate-900">Krimsona</span>
+        </div>
+
+        <!-- Desktop Menu -->
+        <div class="hidden lg:flex space-x-8 items-center">
+          <a href="#how-it-works" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition">How it
+            Works</a>
+          <a href="#use-cases" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition">Use
+            Cases</a>
+          <a href="#pricing" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition">Pricing</a>
+          <button onclick="toggleModal()"
+            class="bg-brand-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-brand-700 transition shadow-lg shadow-brand-500/30">
+            Get Started Free
+          </button>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="lg:hidden flex items-center">
+          <button onclick="toggleMobileMenu()" class="text-slate-600 hover:text-brand-600 focus:outline-none">
+            <i class="fas fa-bars text-2xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-slate-100 absolute w-full shadow-xl">
+      <div class="px-4 pt-2 pb-6 space-y-2">
+        <a href="#how-it-works"
+          class="block px-3 py-3 rounded-md text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600">How
+          it Works</a>
+        <a href="#use-cases"
+          class="block px-3 py-3 rounded-md text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600">Use
+          Cases</a>
+        <a href="#pricing"
+          class="block px-3 py-3 rounded-md text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600">Pricing</a>
+        <button onclick="toggleModal()"
+          class="block w-full text-center mt-4 bg-brand-600 text-white px-5 py-3 rounded-lg font-bold">
+          Get Started
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- LOGIN MODAL -->
+  <div id="auth-modal"
+    class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+    <div class="modal-overlay absolute w-full h-full bg-slate-900 opacity-50" onclick="toggleModal()"></div>
+
+    <div
+      class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded-2xl shadow-2xl z-50 overflow-y-auto transform transition-all scale-95 duration-300"
+      id="modal-content">
+      <div class="modal-content py-4 text-left px-6">
+        <!-- Title -->
+        <div class="flex justify-between items-center pb-3">
+          <p class="text-2xl font-display font-bold text-slate-900">
+            Welcome Back
+          </p>
+          <div class="cursor-pointer z-50" onclick="toggleModal()">
+            <i class="fas fa-times text-slate-500 hover:text-brand-600"></i>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="my-5">
+          <p class="text-slate-500 mb-6">
+            Enter your details to access your Krimsona workspace.
+          </p>
+
+          <form onsubmit="
+                event.preventDefault();
+                alert('Integration Point: Redirect to Dashboard');
+                toggleModal();
+              ">
+            <div class="mb-4">
+              <label class="block text-slate-700 text-sm font-bold mb-2" for="email">Email</label>
+              <input
+                class="shadow appearance-none border rounded w-full py-3 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline focus:border-brand-500"
+                id="email" type="email" placeholder="you@company.com" />
+            </div>
+            <div class="mb-6">
+              <label class="block text-slate-700 text-sm font-bold mb-2" for="password">Password</label>
+              <input
+                class="shadow appearance-none border rounded w-full py-3 px-3 text-slate-700 mb-3 leading-tight focus:outline-none focus:shadow-outline focus:border-brand-500"
+                id="password" type="password" placeholder="******************" />
+            </div>
+
+            <button type="submit"
+              class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-4 rounded-lg w-full focus:outline-none focus:shadow-outline transition duration-200">
+              Continue
+            </button>
+          </form>
+
+          <div class="mt-4 text-center">
+            <span class="text-xs text-slate-400">Or continue with</span>
+            <div class="flex justify-center gap-4 mt-3">
+              <button class="p-2 bg-slate-100 rounded-full w-10 h-10 hover:bg-slate-200">
+                <i class="fab fa-google"></i>
+              </button>
+              <button class="p-2 bg-slate-100 rounded-full w-10 h-10 hover:bg-slate-200">
+                <i class="fab fa-github"></i>
+              </button>
+              <button class="p-2 bg-slate-100 rounded-full w-10 h-10 hover:bg-slate-200">
+                <i class="fab fa-microsoft"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO SECTION -->
+  <section class="pt-32 pb-20 lg:pt-48 lg:pb-32 hero-gradient overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <div class="text-center max-w-4xl mx-auto">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wide mb-6 animate-fade-in-up">
+          <span class="w-2 h-2 rounded-full bg-brand-600 animate-pulse"></span>
+          v2.0 Now Available with Excel Export
+        </div>
+        <h1 id="hero-heading"
+          class="text-5xl lg:text-7xl font-display font-bold text-slate-900 leading-[1.1] mb-6 transition-opacity duration-500 opacity-100">
+          Don't manage tasks.<br />
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-purple-600">Just say
+            them.</span>
+        </h1>
+        <p class="text-lg md:text-xl text-slate-500 mb-10 max-w-4xl mx-auto leading-relaxed">
+          Krimsona is an AI-native workspace that listens, understands, and acts.
+          It captures your voice, parses intent, organizes tasks, preserves context, and automatically
+          logs your work eliminating repetitive manual data entry. Built on a local-first architecture,
+          Krimsona keeps your data close while intelligently orchestrating your entire workflow.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <button onclick="toggleModal()"
+            class="w-full sm:w-auto px-8 py-4 bg-slate-900 text-white rounded-xl font-bold text-lg hover:bg-slate-800 transition shadow-xl hover:shadow-2xl hover:-translate-y-1">
+            Try Krimsona Free
+          </button>
+          <button
+            class="w-full sm:w-auto px-8 py-4 bg-white text-slate-700 border border-slate-200 rounded-xl font-bold text-lg hover:bg-slate-50 transition flex items-center justify-center gap-2">
+            <i class="fas fa-play-circle text-brand-600"></i> Watch Demo
+          </button>
+        </div>
+      </div>
+
+      <!-- Dashboard Mockup -->
+      <div class="mt-20 relative mx-auto max-w-5xl">
+        <div class="absolute -inset-1 bg-gradient-to-r from-brand-600 to-purple-600 rounded-2xl blur opacity-30"></div>
+        <div class="relative bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden">
+          <!-- Fake Browser Header -->
+          <div class="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center gap-2">
+            <div class="flex gap-1.5">
+              <div class="w-3 h-3 rounded-full bg-red-400"></div>
+              <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+              <div class="w-3 h-3 rounded-full bg-green-400"></div>
+            </div>
+            <div
+              class="ml-4 bg-white px-3 py-1 rounded text-xs text-slate-400 border border-slate-200 flex-1 max-w-xs flex items-center gap-2">
+              <i class="fas fa-lock text-[10px] text-green-500"></i> app.krimsona.ai
+            </div>
+          </div>
+          <!-- Mockup Content -->
+          <div class="p-0 grid grid-cols-12 h-[500px]">
+            <!-- Sidebar -->
+            <div
+              class="col-span-1 md:col-span-2 bg-slate-900 text-slate-300 p-4 hidden md:block border-r border-slate-800">
+              <div class="space-y-6">
+                <div class="w-8 h-8 bg-brand-600 rounded flex items-center justify-center text-white"><i
+                    class="fas fa-wave-square"></i></div>
+                <div class="space-y-4 text-xs font-mono tracking-wide">
+                  <div class="text-white font-bold"><i class="fas fa-layer-group mr-2"></i> DASHBOARD</div>
+                  <div class="hover:text-white"><i class="fas fa-stream mr-2"></i> TIMELINE</div>
+                  <div class="hover:text-white"><i class="fas fa-brain mr-2"></i> MEMORY LANE</div>
+                  <div class="hover:text-white"><i class="fas fa-code-branch mr-2"></i> EXPORTS</div>
+                </div>
+              </div>
+            </div>
+            <!-- Main Area -->
+            <div class="col-span-12 md:col-span-7 bg-slate-50 p-8 border-r border-slate-200">
+              <div class="mb-6 flex justify-between items-end">
+                <div>
+                  <h3 class="text-2xl font-bold text-slate-800">Good afternoon.</h3>
+                  <p class="text-slate-500 text-sm">System Status: <span class="text-green-600 font-mono">ONLINE</span>
+                  </p>
+                </div>
+                <div class="text-right">
+                  <span class="text-3xl font-mono font-bold text-brand-600">02:14:00</span>
+                  <p class="text-[10px] text-slate-400 uppercase tracking-wider">Deep Work Duration</p>
+                </div>
+              </div>
+              <!-- Active Task -->
+              <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-brand-500 mb-6">
+                <div class="flex justify-between items-start mb-2">
+                  <span
+                    class="px-2 py-1 bg-brand-100 text-brand-700 rounded text-[10px] font-bold tracking-wider uppercase">Active
+                    Context</span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-400 font-mono">ID: #8821</span>
+                    <i class="fas fa-microphone text-brand-600 animate-pulse"></i>
+                  </div>
+                </div>
+                <h4 class="text-lg font-bold text-slate-800">Frontend Architecture Refactor</h4>
+                <p class="text-sm text-slate-500 mt-2 italic font-mono bg-slate-50 p-2 rounded border border-slate-100">
+                  "Command received: Initialize refactor of component library. Log start time."</p>
+              </div>
+              <!-- History -->
+              <div class="space-y-3">
+                <div
+                  class="p-3 bg-white rounded-lg border border-slate-200 flex justify-between opacity-60 items-center">
+                  <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                    <span class="font-medium text-sm">Auth API Debugging</span>
+                  </div>
+                  <span class="text-slate-400 text-xs font-mono">42m 12s</span>
+                </div>
+              </div>
+            </div>
+            <!-- Right Panel -->
+            <div class="col-span-3 bg-white p-6 hidden lg:block">
+              <h4 class="font-bold text-[10px] text-slate-500 uppercase tracking-widest mb-4">Export Protocol</h4>
+              <div class="space-y-3">
+                <div
+                  class="p-3 border rounded hover:bg-slate-50 cursor-pointer flex items-center gap-3 group transition-all">
+                  <div
+                    class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i class="fas fa-file-excel"></i>
+                  </div>
+                  <div>
+                    <div class="text-sm font-bold">EXCEL</div>
+                    <div class="text-[10px] text-slate-400">Structured Data</div>
+                  </div>
+                </div>
+                <div
+                  class="p-3 border rounded hover:bg-slate-50 cursor-pointer flex items-center gap-3 group transition-all">
+                  <div
+                    class="w-8 h-8 rounded bg-red-100 text-red-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i class="fas fa-file-pdf"></i>
+                  </div>
+                  <div>
+                    <div class="text-sm font-bold">PDF</div>
+                    <div class="text-[10px] text-slate-400">Executive Summary</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logos -->
+      <div class="mt-16 text-center">
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-8">Trusted by High-Performance Teams
+        </p>
+        <div
+          class="flex flex-wrap justify-center gap-8 md:gap-16 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
+          <i class="fab fa-aws text-4xl hover:text-[#FF9900]"></i>
+          <i class="fab fa-google text-4xl hover:text-[#4285F4]"></i>
+          <i class="fab fa-spotify text-4xl hover:text-[#1DB954]"></i>
+          <i class="fab fa-stripe text-4xl hover:text-[#008CDD]"></i>
+          <i class="fab fa-airbnb text-4xl hover:text-[#FF5A5F]"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEEP DIVE FEATURES -->
+  <section id="features" class="py-24 bg-slate-950 text-white relative overflow-hidden">
+      <!-- Abstract Tech Background -->
+      <div class="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
+          <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-900 rounded-full blur-[120px]"></div>
+          <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-900 rounded-full blur-[120px]"></div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div class="text-center max-w-3xl mx-auto mb-20">
+              <h2 class="text-brand-500 font-mono text-sm font-bold uppercase tracking-widest mb-3">Under the Hood</h2>
+              <h3 class="text-4xl md:text-5xl font-display font-bold text-white mb-6">The Krimsona Engine.</h3>
+              <p class="text-lg text-slate-400 leading-relaxed">
+                  We didn't just build a to-do list. We engineered a cognitive architecture designed to handle high-velocity inputs with zero friction.
+              </p>
+          </div>
+
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <!-- Feature 1 -->
+              <div class="tech-card p-8 rounded-2xl border border-slate-800 transition-all duration-300">
+                  <div class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center text-brand-500 text-xl mb-6 shadow-lg shadow-brand-900/20">
+                      <i class="fas fa-brain"></i>
+                  </div>
+                  <h4 class="text-xl font-bold mb-3 font-display">Context-Aware NLU</h4>
+                  <p class="text-slate-400 text-sm leading-relaxed">
+                      Our Natural Language Understanding engine doesn't just transcribe; it parses intent. It distinguishes between a "Note to self", a "Bug Report", and a "Critical Task", routing data to logical buckets automatically.
+                  </p>
+              </div>
+
+              <!-- Feature 2 -->
+              <div class="tech-card p-8 rounded-2xl border border-slate-800 transition-all duration-300">
+                  <div class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center text-indigo-500 text-xl mb-6 shadow-lg shadow-indigo-900/20">
+                      <i class="fas fa-database"></i>
+                  </div>
+                  <h4 class="text-xl font-bold mb-3 font-display">Local-First Architecture</h4>
+                  <p class="text-slate-400 text-sm leading-relaxed">
+                      Latency kills flow. Krimsona operates on a "Local-First" principle. All CRUD operations happen instantly on-device using IndexedDB, syncing to the cloud only when necessary. Zero loading spinners.
+                  </p>
+              </div>
+
+              <!-- Feature 3 -->
+              <div class="tech-card p-8 rounded-2xl border border-slate-800 transition-all duration-300">
+                  <div class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center text-emerald-500 text-xl mb-6 shadow-lg shadow-emerald-900/20">
+                      <i class="fas fa-history"></i>
+                  </div>
+                  <h4 class="text-xl font-bold mb-3 font-display">Temporal Recall</h4>
+                  <p class="text-slate-400 text-sm leading-relaxed">
+                      Human memory is fallible; Krimsona is not. The "Memory Lane" feature creates an immutable ledger of every session. Query past states—"What did I deploy last Tuesday?"—to reconstruct context instantly.
+                  </p>
+              </div>
+
+              <!-- Feature 4 -->
+              <div class="tech-card p-8 rounded-2xl border border-slate-800 transition-all duration-300">
+                  <div class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center text-amber-500 text-xl mb-6 shadow-lg shadow-amber-900/20">
+                      <i class="fas fa-file-export"></i>
+                  </div>
+                  <h4 class="text-xl font-bold mb-3 font-display">Multi-Modal Export</h4>
+                  <p class="text-slate-400 text-sm leading-relaxed">
+                      Your data is portable by design. Generate executive-level PDF summaries for stakeholders or raw JSON/CSV dumps for your data warehouse. We ensure full data sovereignty.
+                  </p>
+              </div>
+
+              <!-- Feature 5 -->
+              <div class="tech-card p-8 rounded-2xl border border-slate-800 transition-all duration-300">
+                  <div class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center text-cyan-500 text-xl mb-6 shadow-lg shadow-cyan-900/20">
+                      <i class="fas fa-shield-alt"></i>
+                  </div>
+                  <h4 class="text-xl font-bold mb-3 font-display">Enterprise-Grade Security</h4>
+                  <p class="text-slate-400 text-sm leading-relaxed">
+                      Built on AES-256 encryption standards. Whether you are a solo founder or a Fortune 500 entity, your intellectual property remains encrypted at rest and in transit.
+                  </p>
+              </div>
+
+              <!-- Feature 6 -->
+              <div class="tech-card p-8 rounded-2xl border border-slate-800 transition-all duration-300 relative group overflow-hidden">
+                  <div class="absolute inset-0 bg-gradient-to-br from-brand-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center text-white text-xl mb-6 shadow-lg">
+                      <i class="fas fa-bolt"></i>
+                  </div>
+                  <h4 class="text-xl font-bold mb-3 font-display">REST API Access</h4>
+                  <p class="text-slate-400 text-sm leading-relaxed">
+                      Don't let data rot in a silo. Use our robust API to pipe Krimsona logs directly into Jira tickets, Slack channels, or custom dashboards. Programmable productivity.
+                  </p>
+              </div>
+          </div>
+      </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works" class="py-24 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="text-3xl md:text-4xl font-display font-bold text-slate-900 mb-4">
+          Your voice is the command line.
+        </h2>
+        <p class="text-lg text-slate-600">
+          Forget clicking through endless menus. Krimsona runs in the
+          background and responds to natural language.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Step 1 -->
+        <div
+          class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 feature-card transition-all duration-300">
+          <div
+            class="icon-bg w-14 h-14 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center text-2xl mb-6 transition-transform duration-300">
+            <i class="fas fa-microphone-alt"></i>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 mb-3">
+            1. Wake & Speak
+          </h3>
+          <p class="text-slate-600 leading-relaxed">
+            Just say <strong>"Hey Krimsona"</strong>. The AI wakes up
+            instantly. Tell it what you're working on, log a bug, or dictate a
+            quick note.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div
+          class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 feature-card transition-all duration-300">
+          <div
+            class="icon-bg w-14 h-14 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-2xl mb-6 transition-transform duration-300">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 mb-3">
+            2. Auto-Organization
+          </h3>
+          <p class="text-slate-600 leading-relaxed">
+            Krimsona parses your voice, creates a ticket, starts the timer,
+            and categorizes the task. No manual typing required.
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div
+          class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 feature-card transition-all duration-300">
+          <div
+            class="icon-bg w-14 h-14 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-2xl mb-6 transition-transform duration-300">
+            <i class="fas fa-file-export"></i>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 mb-3">
+            3. Analyze & Export
+          </h3>
+          <p class="text-slate-600 leading-relaxed">
+            End of the day? Ask Krimsona to "Close my day." It generates an
+            Excel or PDF report ready to email to your manager.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES (TABS) -->
+  <section id="use-cases" class="py-24 bg-white overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col lg:flex-row gap-16 lg:items-center">
+        <!-- Text Content -->
+        <div class="lg:w-1/2 min-w-0">
+
+          <h2 class="text-3xl md:text-4xl font-display font-bold text-slate-900 mb-4">
+            Krimsona adapts to the way you work, learn, and live.
+          </h2>
+          <div class="min-h-[40px] md:min-h-[48px] mb-6 flex items-center">
+            <h3 id="dynamic-heading"
+              class="text-xl md:text-2xl font-display font-bold text-brand-600 transition-opacity duration-500 opacity-100">
+              Built for those who value flow state.</h3>
+          </div>
+          <p class="text-slate-600 mb-6 text-lg">
+            Whether you're pushing code, pushing weights, studying for finals, or pushing your boundaries, just speak naturally. Krimsona understands your intent, adapts to your workflow, and automatically organizes your tasks, logs, and context in the background.
+          </p>
+          <p class="text-slate-600 mb-6 text-lg font-medium">
+            No app switching. No manual data entry. No breaking your flow.
+          </p>
+          <p class="text-slate-600 mb-8 text-lg">
+            Just say it. <span class="font-bold text-slate-900">Krimsona gets it logged.</span>
+          </p>
+
+
+          <!-- Tab Buttons -->
+          <div class="flex space-x-2 bg-slate-100 p-1 rounded-lg mb-8 overflow-x-auto no-scrollbar w-full max-w-full">
+            <button onclick="switchTab('professionals_v5')"
+              class="tab-btn px-4 py-2 rounded-md text-sm font-bold bg-white text-slate-900 shadow-sm transition whitespace-nowrap"
+              id="btn-professionals_v5">Corporate</button>
+            <button onclick="switchTab('entrepreneurs_v5')"
+              class="tab-btn px-4 py-2 rounded-md text-sm font-bold text-slate-500 hover:text-slate-900 transition whitespace-nowrap"
+              id="btn-entrepreneurs_v5">Entrepreneurs</button>
+            <button onclick="switchTab('students_v5')"
+              class="tab-btn px-4 py-2 rounded-md text-sm font-bold text-slate-500 hover:text-slate-900 transition whitespace-nowrap"
+              id="btn-students_v5">Students</button>
+            <button onclick="switchTab('lifestyle_v5')"
+              class="tab-btn px-4 py-2 rounded-md text-sm font-bold text-slate-500 hover:text-slate-900 transition whitespace-nowrap"
+              id="btn-lifestyle_v5">Lifestyle</button>
+            <button onclick="switchTab('managers')"
+              class="tab-btn px-4 py-2 rounded-md text-sm font-bold text-slate-500 hover:text-slate-900 transition"
+              id="btn-managers">Managers</button>
+            <button onclick="switchTab('fitness')"
+              class="tab-btn px-4 py-2 rounded-md text-sm font-bold text-slate-500 hover:text-slate-900 transition whitespace-nowrap"
+              id="btn-fitness">Fitness</button>
+            <button onclick="switchTab('journal')"
+              class="tab-btn px-4 py-2 rounded-md text-sm font-bold text-slate-500 hover:text-slate-900 transition whitespace-nowrap"
+              id="btn-journal">Journaling</button>
+          </div>
+
+          <!-- Dynamic Content -->
+          <div id="tab-content">
+            <!-- Student Content -->
+            <div class="animate-fade-in">
+              <h3 class="text-2xl font-bold text-slate-800 mb-4">
+                For Developers & Managers
+              </h3>
+              <p class="text-slate-600 mb-6">
+                Stay in flow state. 'Log bug in auth module' or 'Note for standup: deployed API fix'. Krimsona
+                timestamps it and prepares it for Jira.
+              </p>
+              <ul class="check-list space-y-3 text-slate-700">
+                <li>Voice-to-Ticket generation</li>
+                <li>Automated Standup Summaries</li>
+                <li>Track billable hours effortlessly</li>
+              </ul>
+            </div>
+          </div>
+
+          <a href="#pricing"
+            class="inline-flex items-center gap-2 text-brand-600 font-bold mt-8 hover:gap-3 transition-all">
+            See how it fits your workflow <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Visual -->
+        <div class="lg:w-1/2 relative">
+          <div class="absolute -inset-4 bg-brand-100 rounded-full blur-3xl opacity-50"></div>
+          <img
+            src="https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+            alt="Workflow" id="tab-image"
+            class="relative rounded-2xl shadow-2xl border border-white transform rotate-1 hover:rotate-0 transition duration-500 object-cover h-[400px] w-full" />
+
+          <!-- Floating Badge -->
+          <div
+            class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl border border-slate-100 flex items-center gap-4 animate-bounce-slow">
+            <div class="bg-green-100 p-3 rounded-full text-green-600">
+              <i class="fas fa-check"></i>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 uppercase font-bold">
+                Logged
+              </div>
+              <div class="font-bold text-slate-800" id="tab-badge">
+                Meeting Notes Saved
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing" class="py-24 bg-slate-900 text-white relative overflow-hidden">
+    <!-- Abstract Background -->
+    <div class="absolute top-0 right-0 w-1/2 h-full bg-brand-900 opacity-20 blur-3xl"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="text-3xl md:text-4xl font-display font-bold mb-4">
+          Plans for every stage.
+        </h2>
+        <p class="text-lg text-slate-400">
+          Scale your productivity from personal use to enterprise
+          orchestration.
+        </p>
+
+        <!-- Category Switcher (Individual vs Business) -->
+        <div class="mt-8 mb-6 flex justify-center">
+          <div class="bg-slate-800 p-1 rounded-xl inline-flex relative border border-slate-700">
+            <button onclick="switchPricingCategory('individual')" id="cat-individual"
+              class="px-6 py-2 rounded-lg text-sm font-bold bg-brand-600 text-white shadow-lg transition-all duration-300">
+              Individual
+            </button>
+            <button onclick="switchPricingCategory('business')" id="cat-business"
+              class="px-6 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white transition-all duration-300">
+              Business
+            </button>
+          </div>
+        </div>
+
+        <!-- Monthly/Yearly Toggle -->
+        <div class="flex items-center justify-center gap-4 select-none">
+          <span class="text-sm font-medium text-slate-300" id="billing-monthly">Monthly</span>
+          <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+            <input type="checkbox" name="toggle" id="price-toggle"
+              class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-700 transition-all duration-300"
+              onchange="togglePricing()" />
+            <label for="price-toggle"
+              class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-700 cursor-pointer border border-slate-600"></label>
+          </div>
+          <span class="text-sm font-medium text-white" id="billing-yearly">Yearly
+            <span class="text-brand-400 text-xs font-bold">(Save 20%)</span></span>
+        </div>
+      </div>
+
+      <!-- Pricing Grids Container -->
+      <div class="relative min-h-[500px]">
+        <!-- INDIVIDUAL PLANS -->
+        <div id="plans-individual"
+          class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 transition-opacity duration-300 opacity-100">
+          <!-- Plan 1: Starter -->
+          <div
+            class="bg-slate-800/50 p-8 rounded-2xl border border-slate-700 hover:border-brand-500 hover:bg-slate-800 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">Starter</h3>
+              <span class="bg-slate-700 text-slate-300 text-xs px-2 py-1 rounded">Individual</span>
+            </div>
+            <p class="text-slate-400 text-sm mb-6 h-10">
+              Essential tools for students and hobbyists.
+            </p>
+            <div class="mb-6">
+              <span class="text-4xl font-display font-bold price-text" data-monthly="0" data-yearly="0">$0</span>
+              <span class="text-slate-400 text-sm">/mo</span>
+            </div>
+            <button onclick="toggleModal()"
+              class="block w-full py-3 px-4 bg-slate-700 hover:bg-slate-600 rounded-lg text-center font-bold transition">
+              Get Started
+            </button>
+            <ul class="mt-8 space-y-4 text-sm text-slate-300">
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> 1 User
+              </li>
+
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Basic Voice
+                Commands
+              </li>
+
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Local Storage
+                (Secure)
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Excel Export
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> 1 User
+              </li>
+            </ul>
+          </div>
+
+          <!-- Plan 2: Creator -->
+          <div
+            class="bg-slate-800/50 p-8 rounded-2xl border border-slate-700 hover:border-brand-500 hover:bg-slate-800 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">Creator/Professional</h3>
+              <span class="bg-brand-900 text-brand-300 text-xs px-2 py-1 rounded">Popular</span>
+            </div>
+            <p class="text-slate-400 text-sm mb-6 h-10">
+              For freelancers managing multiple projects./For power users and
+              freelancers.
+            </p>
+            <div class="mb-6">
+              <span class="text-4xl font-display font-bold price-text" data-monthly="12" data-yearly="9">$12</span>
+              <span class="text-slate-400 text-sm billing-period">/mo</span>
+            </div>
+            <button onclick="toggleModal()"
+              class="block w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 rounded-lg text-center font-bold transition">
+              Start Free Trial
+            </button>
+            <ul class="mt-8 space-y-4 text-sm text-slate-300">
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Everything in
+                Starter
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> PDF & CSV Exports
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Priority Voice
+                Parsing
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Email Support
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Cloud Sync
+                (Multi-device)
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Advanced Analytics
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Priority Support
+              </li>
+
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Unlimited History
+              </li>
+            </ul>
+          </div>
+
+          <!-- Plan 3: Power User -->
+          <div
+            class="bg-slate-800/50 p-8 rounded-2xl border border-slate-700 hover:border-brand-500 hover:bg-slate-800 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">Power User</h3>
+              <span class="bg-slate-700 text-slate-300 text-xs px-2 py-1 rounded">Individual</span>
+            </div>
+            <p class="text-slate-400 text-sm mb-6 h-10">
+              Advanced analytics and integrations for pros.
+            </p>
+            <div class="mb-6">
+              <span class="text-4xl font-display font-bold price-text" data-monthly="29" data-yearly="24">$29</span>
+              <span class="text-slate-400 text-sm billing-period">/mo</span>
+            </div>
+            <button onclick="toggleModal()"
+              class="block w-full py-3 px-4 bg-slate-700 hover:bg-slate-600 rounded-lg text-center font-bold transition">
+              Subscribe
+            </button>
+            <ul class="mt-8 space-y-4 text-sm text-slate-300">
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Unlimited History
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> API Access
+                (Personal)
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Multi-device Sync
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Advanced Analytics
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i>
+                <strong>Memory Lane Feature</strong>
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Personal API Key
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- End Individual Plans -->
+
+        <!-- BUSINESS PLANS (Hidden by default) -->
+        <div id="plans-business" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 hidden">
+          <!-- Plan 4: Team -->
+          <div
+            class="bg-slate-800/50 p-8 rounded-2xl border border-slate-700 hover:border-brand-500 hover:bg-slate-800 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">Team</h3>
+              <span class="bg-indigo-900 text-indigo-300 text-xs px-2 py-1 rounded">Collaborative</span>
+            </div>
+            <p class="text-slate-400 text-sm mb-6 h-10">
+              Centralized billing and shared dashboards./For agile teams and
+              agencies.
+            </p>
+            <div class="mb-6">
+              <span class="text-4xl font-display font-bold price-text" data-monthly="49" data-yearly="39">$49</span>
+              <span class="text-slate-400 text-sm billing-period">/mo</span>
+              <div class="text-xs text-slate-500 mt-1">Includes 5 seats</div>
+            </div>
+            <button onclick="toggleModal()"
+              class="block w-full py-3 px-4 bg-slate-700 hover:bg-slate-600 rounded-lg text-center font-bold transition">
+              Create Team
+            </button>
+            <ul class="mt-8 space-y-4 text-sm text-slate-300">
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Team Dashboards
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Team Velocity
+                Charts
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Shared Projects
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Admin Roles
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Consolidated
+                Billing
+              </li>
+
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Admin Controls
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> API Access
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Dedicated Manager
+              </li>
+            </ul>
+          </div>
+
+          <!-- Plan 5: Enterprise -->
+          <div
+            class="bg-slate-800/50 p-8 rounded-2xl border border-slate-700 hover:border-brand-500 hover:bg-slate-800 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">Enterprise</h3>
+              <span class="bg-slate-700 text-slate-300 text-xs px-2 py-1 rounded">Organization</span>
+            </div>
+            <p class="text-slate-400 text-sm mb-6 h-10">
+              Security, compliance, and scale for large orgs.
+            </p>
+            <div class="mb-6 flex items-baseline gap-2">
+              <span class="text-3xl font-display font-bold">Contact</span>
+            </div>
+            <button onclick="toggleModal()"
+              class="block w-full py-3 px-4 bg-white text-slate-900 hover:bg-slate-200 rounded-lg text-center font-bold transition">
+              Contact Sales
+            </button>
+            <ul class="mt-8 space-y-4 text-sm text-slate-300">
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> SSO (SAML/OIDC)
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Audit Logs
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Dedicated Success
+                Mgr
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> SLA Guarantee
+              </li>
+            </ul>
+          </div>
+
+          <!-- Plan 6: Custom Solutions -->
+          <div
+            class="bg-gradient-to-br from-slate-800 to-brand-900/30 p-8 rounded-2xl border border-slate-700 hover:border-brand-500 transition-all duration-300 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-brand-600 blur-[80px] opacity-20"></div>
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">Custom</h3>
+              <span class="bg-slate-700 text-slate-300 text-xs px-2 py-1 rounded">Bespoke</span>
+            </div>
+            <p class="text-slate-400 text-sm mb-6 h-10">
+              Tailored integrations and feature development.
+            </p>
+            <div class="mb-6 flex items-baseline gap-2">
+              <span class="text-3xl font-display font-bold">Let's Talk</span>
+            </div>
+            <button onclick="toggleModal()"
+              class="block w-full py-3 px-4 border border-brand-500 text-brand-400 hover:bg-brand-900/50 rounded-lg text-center font-bold transition">
+              Get a Quote
+            </button>
+            <ul class="mt-8 space-y-4 text-sm text-slate-300">
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Custom Feature
+                Requests
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> On-Premise
+                Deployment
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> White Labeling
+              </li>
+              <li class="flex items-center gap-3">
+                <i class="fas fa-check text-brand-500"></i> Training &
+                Onboarding
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- End Business Plans -->
+      </div>
+      <!-- End Pricing Grids Container -->
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-white pt-16 pb-8 border-t border-slate-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+        <div class="col-span-2 md:col-span-1">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-6 h-6 bg-brand-600 rounded flex items-center justify-center text-white text-xs">
+              <i class="fas fa-wave-square"></i>
+            </div>
+            <span class="font-display font-bold text-xl text-slate-900">Krimsona</span>
+          </div>
+          <p class="text-sm text-slate-500">
+            The first voice-native project management tool designed for the
+            modern era.
+          </p>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-900 mb-4">Product</h4>
+          <ul class="space-y-2 text-sm text-slate-600">
+            <li><a href="#" class="hover:text-brand-600">Features</a></li>
+            <li><a href="#" class="hover:text-brand-600">Integrations</a></li>
+            <li><a href="#" class="hover:text-brand-600">Pricing</a></li>
+            <li><a href="#" class="hover:text-brand-600">Changelog</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-900 mb-4">Resources</h4>
+          <ul class="space-y-2 text-sm text-slate-600">
+            <li>
+              <a href="#" class="hover:text-brand-600">Documentation</a>
+            </li>
+            <li><a href="#" class="hover:text-brand-600">API</a></li>
+            <li><a href="#" class="hover:text-brand-600">Community</a></li>
+            <li><a href="#" class="hover:text-brand-600">Help Center</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-900 mb-4">Company</h4>
+          <ul class="space-y-2 text-sm text-slate-600">
+            <li><a href="#" class="hover:text-brand-600">About</a></li>
+            <li><a href="#" class="hover:text-brand-600">Careers</a></li>
+            <li><a href="#" class="hover:text-brand-600">Legal</a></li>
+            <li><a href="#" class="hover:text-brand-600">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-sm text-slate-400">
+          &copy; 2025 Krimsona Inc. All rights reserved.
+        </p>
+        <div class="flex gap-4 text-slate-400">
+          <a href="#" class="hover:text-brand-600"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="hover:text-brand-600"><i class="fab fa-github"></i></a>
+          <a href="#" class="hover:text-brand-600"><i class="fab fa-discord"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- INTERACTIVITY SCRIPT -->
+  <script>
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      const menu = document.getElementById("mobile-menu");
+      menu.classList.toggle("hidden");
+    }
+
+    // Modal Logic
+    function toggleModal() {
+      const body = document.querySelector("body");
+      const modal = document.getElementById("auth-modal");
+      const content = document.getElementById("modal-content");
+
+      modal.classList.toggle("opacity-0");
+      modal.classList.toggle("pointer-events-none");
+      body.classList.toggle("modal-active");
+
+      if (!modal.classList.contains("opacity-0")) {
+        // Open
+        content.classList.remove("scale-95");
+        content.classList.add("scale-100");
+      } else {
+        // Close
+        content.classList.remove("scale-100");
+        content.classList.add("scale-95");
+      }
+    }
+
+    // Escape key to close modal
+    document.onkeydown = function (evt) {
+      evt = evt || window.event;
+      if (evt.keyCode == 27) {
+        const modal = document.getElementById("auth-modal");
+        if (!modal.classList.contains("opacity-0")) {
+          toggleModal();
+        }
+      }
+    };
+
+    // Pricing Toggle Logic
+    function togglePricing() {
+      const isYearly = document.getElementById("price-toggle").checked;
+      const priceElements = document.querySelectorAll(".price-text");
+      const periodElements = document.querySelectorAll(".billing-period");
+
+      priceElements.forEach((el) => {
+        // Get the data attributes
+        const monthly = el.getAttribute("data-monthly");
+        const yearly = el.getAttribute("data-yearly");
+
+        // If the price is 0, don't change anything visual besides structure
+        if (monthly === "0") return;
+
+        if (isYearly) {
+          el.innerText = "$" + yearly;
+          el.classList.add("text-brand-400"); // Highlight effect
+          setTimeout(() => el.classList.remove("text-brand-400"), 300);
+        } else {
+          el.innerText = "$" + monthly;
+          el.classList.add("text-brand-400");
+          setTimeout(() => el.classList.remove("text-brand-400"), 300);
+        }
+      });
+
+      periodElements.forEach((el) => {
+        el.innerText = isYearly ? "/mo (billed yearly)" : "/mo";
+      });
+    }
+
+    function switchPricingCategory(category) {
+      const btnIndividual = document.getElementById("cat-individual");
+      const btnBusiness = document.getElementById("cat-business");
+      const plansIndividual = document.getElementById("plans-individual");
+      const plansBusiness = document.getElementById("plans-business");
+
+      if (category === "individual") {
+        btnIndividual.classList.add(
+          "bg-brand-600",
+          "text-white",
+          "shadow-lg",
+        );
+        btnIndividual.classList.remove("text-slate-400", "hover:text-white");
+        btnBusiness.classList.remove(
+          "bg-brand-600",
+          "text-white",
+          "shadow-lg",
+        );
+        btnBusiness.classList.add("text-slate-400", "hover:text-white");
+
+        plansBusiness.classList.add("hidden");
+        plansIndividual.classList.remove("hidden");
+      } else {
+        btnBusiness.classList.add("bg-brand-600", "text-white", "shadow-lg");
+        btnBusiness.classList.remove("text-slate-400", "hover:text-white");
+        btnIndividual.classList.remove(
+          "bg-brand-600",
+          "text-white",
+          "shadow-lg",
+        );
+        btnIndividual.classList.add("text-slate-400", "hover:text-white");
+
+        plansIndividual.classList.add("hidden");
+        plansBusiness.classList.remove("hidden");
+      }
+    }
+
+    // Tab Switching Logic
+    const contentData = {
+      managers: {
+        title: "Your personal secretary for standups.",
+        text: "Get a clear picture of your day before your team meeting. Krimsona aggregates all your voice notes into a concise daily report.",
+        list: [
+          "Automated Daily Summaries",
+          "Team Velocity Tracking",
+          "Export to PDF for stakeholders",
+        ],
+        img: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        badge: "Deep Work Mode",
+      },
+      fitness: {
+        title: "The gym partner that counts for you.",
+        text: "Don't fumble with your phone between sets. 'Logged 3 sets of bench press at 80kg.' Krimsona tracks your volume, rest times, and PRs while you catch your breath.",
+        list: [
+          "Hands-free workout logging",
+          "Rest timer auto-start",
+          "Nutrition & macro dictation",
+        ],
+        img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        badge: "Workout Complete",
+      },
+      journal: {
+        title: "A searchable history of your life.",
+        text: "Capture memories, daily wins, or just vent. With Premium, travel back to any 'beautiful day' and see exactly what you accomplished and how you felt.",
+        list: [
+          "Mood & thought tracking",
+          "Memory Lane (History Recall)",
+          "Voice-to-text diary entries",
+        ],
+        img: "https://images.unsplash.com/photo-1517960413843-0aee8e2b3285?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        badge: "Memory Saved",
+      },
+      professionals_v5: {
+        title: "For Developers & Managers",
+        text: "Stay in flow state. 'Log bug in auth module' or 'Note for standup: deployed API fix'. Krimsona timestamps it and prepares it for Jira.",
+        list: ["Voice-to-Ticket generation", "Automated Standup Summaries", "Track billable hours effortlessly"],
+        img: "https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        badge: "Meeting Notes Saved"
+      },
+      entrepreneurs_v5: {
+        title: "For Freelancers & Founders",
+        text: "Wearing multiple hats? Keep track of client work, marketing ideas, and admin tasks without typing a single word.",
+        list: ["Client billing tracking", "Idea capture on the go", "Task switching made instant"],
+        img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        badge: "Idea Logged"
+      },
+      students_v5: {
+        title: "For Students",
+        text: "Crush assignments without the clutter. Tell Krimsona what chapter you're studying or dictate essay outlines while walking to class.",
+        list: ["Track study duration", "Dictate essay outlines", "Export study logs"],
+        img: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        badge: "Study Session Logged"
+      },
+      lifestyle_v5: {
+        title: "For Personal Growth",
+        text: "From gym sets to gratitude journaling. Use your voice to track workouts, mental health, and daily wins effortlessly.",
+        list: ["Hands-free workout logging", "Mood & thought tracking", "Memory Lane history recall"],
+        img: "https://images.unsplash.com/photo-1517960413843-0aee8e2b3285?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+        badge: "Workout/Memory Saved"
+      }
+    };
+
+    function switchTab(tab) {
+      // Reset Buttons
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.classList.remove("bg-white", "text-slate-900", "shadow-sm");
+        btn.classList.add("text-slate-500");
+      });
+
+      // Active Button
+      const activeBtn = document.getElementById(`btn-${tab}`);
+      activeBtn.classList.add("bg-white", "text-slate-900", "shadow-sm");
+      activeBtn.classList.remove("text-slate-500");
+
+      // Update Content
+      const data = contentData[tab];
+      const container = document.getElementById("tab-content");
+
+      // Update Image & Badge
+      const img = document.getElementById("tab-image");
+      const badge = document.getElementById("tab-badge");
+      if (img && data.img) img.src = data.img;
+      if (badge && data.badge) badge.innerText = data.badge;
+
+      // Simple fade animation replacement
+      container.innerHTML = `
+                <div class="animate-fade-in">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4">${data.title}</h3>
+                    <p class="text-slate-600 mb-6">${data.text}</p>
+                    <ul class="check-list space-y-3 text-slate-700">
+                        ${data.list.map((item) => `<li>${item}</li>`).join("")}
+                    </ul>
+                </div>
+            `;
+    }
+
+    // Dynamic Heading Rotator
+    const headings = [
+      "Built for those who value flow state.",
+      "From coding marathons to marathon training.",
+      "Designed for your lifestyle."
+    ];
+    let currentHeadingIndex = 0;
+    const dynamicHeadingEl = document.getElementById("dynamic-heading");
+
+    if (dynamicHeadingEl) {
+      setInterval(() => {
+        dynamicHeadingEl.classList.remove("opacity-100");
+        dynamicHeadingEl.classList.add("opacity-0");
+
+        setTimeout(() => {
+          currentHeadingIndex = (currentHeadingIndex + 1) % headings.length;
+          dynamicHeadingEl.innerText = headings[currentHeadingIndex];
+          dynamicHeadingEl.classList.remove("opacity-0");
+          dynamicHeadingEl.classList.add("opacity-100");
+        }, 500);
+      }, 4000);
+    }
+
+    // Hero Heading Rotator
+    const heroHeadings = [
+      `Don't manage tasks.<br /><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-purple-600">Just say them.</span>`,
+      `Cognitive Offloading<br /><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-purple-600">via Voice Intelligence.</span>`
+    ];
+    let currentHeroHeadingIndex = 0;
+    const heroHeadingEl = document.getElementById("hero-heading");
+
+    if (heroHeadingEl) {
+      setInterval(() => {
+        heroHeadingEl.classList.remove("opacity-100");
+        heroHeadingEl.classList.add("opacity-0");
+
+        setTimeout(() => {
+          currentHeroHeadingIndex = (currentHeroHeadingIndex + 1) % heroHeadings.length;
+          heroHeadingEl.innerHTML = heroHeadings[currentHeroHeadingIndex];
+          heroHeadingEl.classList.remove("opacity-0");
+          heroHeadingEl.classList.add("opacity-100");
+        }, 500);
+      }, 4500);
+    }
+  </script>
+</body>
+
+</html>
