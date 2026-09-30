@@ -58,58 +58,67 @@ export function useVoiceEngine({
 
   // ── Speech Recognition Setup ──
   useEffect(() => {
-    if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
-      const recognition = new (window as any).webkitSpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = "en-US";
+    if (typeof window !== "undefined") {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = "en-US";
 
-      recognition.onstart = () => setIsListening(true);
-      recognition.onend = () => {
-        setIsListening((curr) => {
-          if (curr) {
-            try { recognition.start(); } catch (e) { /* ignore */ }
-          }
-          return curr;
-        });
-      };
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => {
+          setIsListening((curr) => {
+            if (curr) {
+              try { recognition.start(); } catch (e) { /* ignore */ }
+            }
+            return curr;
+          });
+        };
 
-      recognition.onresult = (event: any) => {
-        let finalStr = "";
-        let interimStr = "";
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalStr += event.results[i][0].transcript;
-          } else {
-            interimStr += event.results[i][0].transcript;
+        recognition.onresult = (event: any) => {
+          let finalStr = "";
+          let interimStr = "";
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              finalStr += event.results[i][0].transcript;
+            } else {
+              interimStr += event.results[i][0].transcript;
+            }
           }
-        }
+          
+          if (finalStr) {
+            setTranscript(finalStr);
+            processCommandRef.current?.(finalStr.toLowerCase());
+          } else if (interimStr) {
+            setTranscript(interimStr);
+          }
+        };
+
+        recognitionRef.current = recognition;
         
-        if (finalStr) {
-          setTranscript(finalStr);
-          processCommandRef.current?.(finalStr.toLowerCase());
-        } else if (interimStr) {
-          setTranscript(interimStr);
-        }
-      };
-
-      recognitionRef.current = recognition;
-      
-      // Auto-start on mount in sleep mode
-      try { recognition.start(); } catch (e) { /* ignore */ }
+        // Auto-start on mount in sleep mode
+        try { recognition.start(); } catch (e) { /* ignore */ }
+      }
     }
     return () => { recognitionRef.current?.stop(); };
   }, []);
 
   // ── Process Command ──
   const processCommand = useCallback(
-    (text: string) => {
+    (text: string, isManual = false) => {
       const ctx = voiceContextRef.current;
       const task = hasActiveTaskRef.current;
       const dictation = dictationRef.current;
       const sleeping = isSleepingRef.current;
       let processedCmd = text.toLowerCase();
       let isNowSleeping = isSleepingRef.current;
+
+      // Manual commands always bypass sleep mode
+      if (isManual && isNowSleeping) {
+        setIsSleeping(false);
+        isNowSleeping = false;
+      }
       
       const wakeRx = /(wake up|wakeup|wake|hi krimsona|hey krimsona|krimsona|resume|listen)/i;
       const sleepRx = /(sleep|go to sleep|pause listening|stop listening|mute|quiet)/i;
@@ -283,7 +292,7 @@ export function useVoiceEngine({
     e.preventDefault();
     if (!manualInput.trim()) return;
     setTranscript(`Manual: ${manualInput}`);
-    processCommand(manualInput);
+    processCommand(manualInput, true);
     setManualInput("");
   };
 

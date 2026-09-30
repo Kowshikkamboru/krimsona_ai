@@ -32,6 +32,7 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
       </head>
       <body className={`${inter.variable} ${spaceGrotesk.variable} bg-white text-slate-800 font-sans min-h-screen flex flex-col`}>
         {children}
