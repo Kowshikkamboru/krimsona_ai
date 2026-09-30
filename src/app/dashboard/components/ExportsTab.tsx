@@ -15,7 +15,7 @@ export default function ExportsTab({ tasks }: ExportsTabProps) {
     const rows = tasks.map((t) => [
       t.id,
       `"${(t.title || "").replace(/"/g, '""')}"`,
-      `"${(t.description || "").replace(/"/g, '""')}"`,
+      `"${((t.objectives || []).join("; ")).replace(/"/g, '""')}"`,
       t.status,
       t.start_time,
       t.end_time || "",

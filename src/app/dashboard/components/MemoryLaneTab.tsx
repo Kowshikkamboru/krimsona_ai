@@ -15,7 +15,7 @@ export default function MemoryLaneTab({ tasks }: MemoryLaneTabProps) {
     ? tasks.filter(
         (t) =>
           t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          t.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          t.objectives?.some((o) => o.toLowerCase().includes(searchQuery.toLowerCase())) ||
           t.proof?.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           t.proof?.commitMessage?.toLowerCase().includes(searchQuery.toLowerCase())
       )

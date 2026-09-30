@@ -140,10 +140,12 @@ export default function TimelineTab({ tasks, onUpdateTitle, onDeleteTask }: Time
                         </span>
                       </div>
 
-                      {t.description && (
+                      {t.objectives && t.objectives.length > 0 && (
                         <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 mb-2">
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-0.5">Plan</p>
-                          <p className="text-sm text-blue-700">{t.description}</p>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-1">Objectives</p>
+                          {t.objectives.map((obj: string, oi: number) => (
+                            <p key={oi} className="text-sm text-blue-700">{t.objectives.length > 1 ? `${oi + 1}. ` : ""}{obj}</p>
+                          ))}
                         </div>
                       )}
                       {t.proof?.description && (

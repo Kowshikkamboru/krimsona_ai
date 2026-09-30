@@ -24,13 +24,15 @@ export default function DashboardPage() {
   // ── 2. Init Voice Engine ──
   const voiceEngine = useVoiceEngine({
     hasActiveTask: !!taskManager.activeTask,
+    activeObjectivesCount: taskManager.activeTask?.objectives?.length ?? 0,
+    activeNotesCount: taskManager.activeTask?.notes?.length ?? 0,
     onStartTask: (title) => {
       taskManager.startTask(title);
       setShowStartModal(false);
       setCurrentTab("dashboard");
     },
     onUpdatePlan: (plan) => {
-      taskManager.updateActivePlan(plan);
+      taskManager.addObjective(plan);
     },
     onStopTask: () => {
       taskManager.triggerStopTask();
@@ -45,6 +47,18 @@ export default function DashboardPage() {
     onCommit: (text) => {
       taskManager.completeAndSaveTask(text);
       setShowEndModal(false);
+    },
+    onRenameTask: (title) => {
+      taskManager.updateActiveTitle(title);
+    },
+    onAddObjective: (text) => {
+      taskManager.addObjective(text);
+    },
+    onUpdateObjective: (index, text) => {
+      taskManager.updateObjective(index, text);
+    },
+    onUpdateNote: (index, text) => {
+      taskManager.updateNote(index, text);
     },
   });
 
@@ -135,6 +149,11 @@ export default function DashboardPage() {
             onManualStop={handleManualStop}
             onOpenStartModal={handleOpenStartModal}
             onUpdateActiveTitle={taskManager.updateActiveTitle}
+            onAddObjective={taskManager.addObjective}
+            onUpdateObjective={taskManager.updateObjective}
+            onRemoveObjective={taskManager.removeObjective}
+            onUpdateNote={taskManager.updateNote}
+            onRemoveNote={taskManager.removeNote}
           />
         )}
         

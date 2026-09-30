@@ -21,8 +21,20 @@ export function useTaskManager() {
   useEffect(() => {
     const savedTasks = JSON.parse(localStorage.getItem("krimsona_tasks") || "[]");
     const savedActive = JSON.parse(localStorage.getItem("krimsona_active") || "null");
-    setTasks(savedTasks);
-    setActiveTask(savedActive);
+    // Migrate legacy tasks: convert description string to objectives array
+    const migrateTasks = (list: any[]) => list.map((t: any) => {
+      if (t.description !== undefined && t.objectives === undefined) {
+        const obj = t.description ? [t.description] : [];
+        const { description, ...rest } = t;
+        return { ...rest, objectives: obj };
+      }
+      return t;
+    });
+    setTasks(migrateTasks(savedTasks));
+    if (savedActive) {
+      const [migrated] = migrateTasks([savedActive]);
+      setActiveTask(migrated);
+    }
   }, []);
 
   // ── Persist ──
@@ -59,7 +71,7 @@ export function useTaskManager() {
     setActiveTask({
       id: Math.floor(1000 + Math.random() * 9000),
       title: title || "Untitled Task",
-      description: plan,
+      objectives: plan ? [plan] : [],
       start_time: new Date().toISOString(),
       end_time: null,
       duration: "00:00:00",
@@ -129,9 +141,33 @@ export function useTaskManager() {
     setActiveTask((prev) => (prev ? { ...prev, title: newTitle } : prev));
   };
 
-  // ── Edit active plan ──
+  // ── Objectives (multiple) ──
+  const addObjective = (text: string) => {
+    setActiveTask((prev) => {
+      if (!prev) return prev;
+      return { ...prev, objectives: [...prev.objectives, text] };
+    });
+  };
+
+  const updateObjective = (index: number, text: string) => {
+    setActiveTask((prev) => {
+      if (!prev) return prev;
+      const updated = [...prev.objectives];
+      updated[index] = text;
+      return { ...prev, objectives: updated };
+    });
+  };
+
+  const removeObjective = (index: number) => {
+    setActiveTask((prev) => {
+      if (!prev) return prev;
+      return { ...prev, objectives: prev.objectives.filter((_, i) => i !== index) };
+    });
+  };
+
+  // ── Legacy compatibility wrapper ──
   const updateActivePlan = (newPlan: string) => {
-    setActiveTask((prev) => (prev ? { ...prev, description: newPlan } : prev));
+    addObjective(newPlan);
   };
 
   // ── Delete ──
@@ -139,11 +175,27 @@ export function useTaskManager() {
     setTasks((prev) => prev.filter((t) => t.id !== taskId));
   };
 
-  // ── Append note ──
+  // ── Notes ──
   const appendNote = (note: string) => {
     setActiveTask((prev: any) => {
       if (!prev) return prev;
       return { ...prev, notes: [...prev.notes, `[${new Date().toLocaleTimeString()}] ${note}`] };
+    });
+  };
+
+  const updateNote = (index: number, text: string) => {
+    setActiveTask((prev) => {
+      if (!prev) return prev;
+      const updated = [...prev.notes];
+      updated[index] = text;
+      return { ...prev, notes: updated };
+    });
+  };
+
+  const removeNote = (index: number) => {
+    setActiveTask((prev) => {
+      if (!prev) return prev;
+      return { ...prev, notes: prev.notes.filter((_, i) => i !== index) };
     });
   };
 
@@ -175,9 +227,14 @@ export function useTaskManager() {
     saveCompletedTask,
     updateTaskTitle,
     updateActiveTitle,
+    addObjective,
+    updateObjective,
+    removeObjective,
     updateActivePlan,
     deleteTask,
     appendNote,
+    updateNote,
+    removeNote,
     totalH,
     totalM,
     totalS,

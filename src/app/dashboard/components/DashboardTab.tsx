@@ -10,6 +10,9 @@ import {
   BarChart3,
   Timer,
   GitCommit,
+  Trash2,
+  Check,
+  X,
 } from "lucide-react";
 import type { Task } from "../types";
 
@@ -29,6 +32,11 @@ interface DashboardTabProps {
   onManualStop: () => void;
   onOpenStartModal: () => void;
   onUpdateActiveTitle: (title: string) => void;
+  onAddObjective: (text: string) => void;
+  onUpdateObjective: (index: number, text: string) => void;
+  onRemoveObjective: (index: number) => void;
+  onUpdateNote: (index: number, text: string) => void;
+  onRemoveNote: (index: number) => void;
 }
 
 export default function DashboardTab({
@@ -47,13 +55,47 @@ export default function DashboardTab({
   onManualStop,
   onOpenStartModal,
   onUpdateActiveTitle,
+  onAddObjective,
+  onUpdateObjective,
+  onRemoveObjective,
+  onUpdateNote,
+  onRemoveNote,
 }: DashboardTabProps) {
+  // Title editing
   const [editingTitle, setEditingTitle] = useState(false);
   const [editValue, setEditValue] = useState("");
 
+  // Objective editing
+  const [editingObjIdx, setEditingObjIdx] = useState<number | null>(null);
+  const [editObjValue, setEditObjValue] = useState("");
+  const [addingObjective, setAddingObjective] = useState(false);
+  const [newObjValue, setNewObjValue] = useState("");
+
+  // Note editing
+  const [editingNoteIdx, setEditingNoteIdx] = useState<number | null>(null);
+  const [editNoteValue, setEditNoteValue] = useState("");
+
   const saveTitle = () => {
-    onUpdateActiveTitle(editValue);
+    if (editValue.trim()) onUpdateActiveTitle(editValue.trim());
     setEditingTitle(false);
+  };
+
+  const saveObjective = (idx: number) => {
+    if (editObjValue.trim()) onUpdateObjective(idx, editObjValue.trim());
+    setEditingObjIdx(null);
+  };
+
+  const addNewObjective = () => {
+    if (newObjValue.trim()) {
+      onAddObjective(newObjValue.trim());
+      setNewObjValue("");
+      setAddingObjective(false);
+    }
+  };
+
+  const saveNote = (idx: number) => {
+    if (editNoteValue.trim()) onUpdateNote(idx, editNoteValue.trim());
+    setEditingNoteIdx(null);
   };
 
   return (
@@ -92,24 +134,22 @@ export default function DashboardTab({
             </div>
           </div>
 
-          {/* Editable Title */}
+          {/* ── Editable Title ── */}
           {editingTitle ? (
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-2 mb-4">
               <input
                 type="text"
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") saveTitle(); if (e.key === "Escape") setEditingTitle(false); }}
                 className="flex-grow text-2xl font-extrabold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-rose-500"
                 autoFocus
               />
-              <button onClick={saveTitle} className="bg-rose-600 text-white px-4 py-2 rounded-lg text-xs font-bold">
-                Save
+              <button onClick={saveTitle} className="bg-rose-600 text-white p-2 rounded-lg hover:bg-rose-700 transition-colors">
+                <Check className="w-4 h-4" />
               </button>
-              <button
-                onClick={() => setEditingTitle(false)}
-                className="text-slate-400 px-3 py-2 rounded-lg text-xs font-bold hover:bg-slate-100"
-              >
-                Cancel
+              <button onClick={() => setEditingTitle(false)} className="text-slate-400 p-2 rounded-lg hover:bg-slate-100">
+                <X className="w-4 h-4" />
               </button>
             </div>
           ) : (
@@ -118,10 +158,7 @@ export default function DashboardTab({
                 {activeTask.title}
               </h2>
               <button
-                onClick={() => {
-                  setEditingTitle(true);
-                  setEditValue(activeTask.title);
-                }}
+                onClick={() => { setEditingTitle(true); setEditValue(activeTask.title); }}
                 className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-400 hover:text-rose-500 transition-all"
               >
                 <Pencil className="w-4 h-4" />
@@ -129,32 +166,155 @@ export default function DashboardTab({
             </div>
           )}
 
-          {activeTask.description && (
-            <div className="mb-4 bg-blue-50 border border-blue-100 rounded-xl p-4">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-1">
-                Plan / Objective
+          {/* ── Objectives (multiple, editable) ── */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-blue-400">
+                Objectives / Plan
               </p>
-              <p className="text-sm text-blue-700">{activeTask.description}</p>
+              <button
+                onClick={() => setAddingObjective(true)}
+                className="text-blue-500 hover:text-blue-700 p-1 rounded hover:bg-blue-50 transition-colors flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest"
+              >
+                <Plus className="w-3 h-3" /> Add
+              </button>
             </div>
-          )}
 
+            {activeTask.objectives.length === 0 && !addingObjective ? (
+              <button
+                onClick={() => setAddingObjective(true)}
+                className="w-full bg-blue-50 border border-dashed border-blue-200 rounded-xl p-3 text-sm text-blue-400 hover:text-blue-600 hover:bg-blue-100 transition-colors flex items-center justify-center gap-2"
+              >
+                <Plus className="w-4 h-4" /> Add an objective or plan
+              </button>
+            ) : (
+              <div className="space-y-2">
+                {activeTask.objectives.map((obj, idx) => (
+                  <div key={idx} className="group">
+                    {editingObjIdx === idx ? (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={editObjValue}
+                          onChange={(e) => setEditObjValue(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter") saveObjective(idx); if (e.key === "Escape") setEditingObjIdx(null); }}
+                          className="flex-grow bg-white border border-blue-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500"
+                          autoFocus
+                        />
+                        <button onClick={() => saveObjective(idx)} className="text-blue-600 p-1.5 rounded-lg hover:bg-blue-50">
+                          <Check className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={() => setEditingObjIdx(null)} className="text-slate-400 p-1.5 rounded-lg hover:bg-slate-100">
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-start justify-between">
+                        <div className="flex items-start gap-2 flex-grow min-w-0">
+                          <span className="text-blue-300 font-mono text-xs font-bold mt-0.5 shrink-0">{idx + 1}.</span>
+                          <p className="text-sm text-blue-700 break-words">{obj}</p>
+                        </div>
+                        <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 ml-2 shrink-0 transition-opacity">
+                          <button
+                            onClick={() => { setEditingObjIdx(idx); setEditObjValue(obj); }}
+                            className="p-1 text-blue-400 hover:text-blue-600 rounded hover:bg-blue-100 transition-colors"
+                          >
+                            <Pencil className="w-3 h-3" />
+                          </button>
+                          <button
+                            onClick={() => onRemoveObjective(idx)}
+                            className="p-1 text-blue-400 hover:text-red-500 rounded hover:bg-red-50 transition-colors"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add new objective inline */}
+            {addingObjective && (
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="text"
+                  value={newObjValue}
+                  onChange={(e) => setNewObjValue(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") addNewObjective(); if (e.key === "Escape") { setAddingObjective(false); setNewObjValue(""); } }}
+                  className="flex-grow bg-white border border-blue-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500 placeholder:text-blue-300"
+                  placeholder="Type objective..."
+                  autoFocus
+                />
+                <button onClick={addNewObjective} className="text-blue-600 p-1.5 rounded-lg hover:bg-blue-50">
+                  <Check className="w-3.5 h-3.5" />
+                </button>
+                <button onClick={() => { setAddingObjective(false); setNewObjValue(""); }} className="text-slate-400 p-1.5 rounded-lg hover:bg-slate-100">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* ── Transcript ── */}
           <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 font-mono text-slate-500 text-sm">
             {voiceContext === "AWAITING_PLAN" && <span className="text-blue-500 font-bold mr-2">[Waiting for Plan — say &quot;skip&quot; to skip]</span>}
             {voiceContext === "AWAITING_NOTE" && <span className="text-amber-500 font-bold mr-2">[Waiting for Note — say &quot;cancel&quot; to cancel]</span>}
             {voiceContext === "AWAITING_SUMMARY" && <span className="text-emerald-500 font-bold mr-2">[Describe what you accomplished]</span>}
             {voiceContext === "AWAITING_COMMIT" && <span className="text-purple-500 font-bold mr-2">[Commit ID? — say &quot;skip&quot; to finish]</span>}
+            {voiceContext === "AWAITING_RENAME" && <span className="text-orange-500 font-bold mr-2">[Say new task name]</span>}
+            {voiceContext === "AWAITING_EDIT_OBJECTIVE" && <span className="text-blue-500 font-bold mr-2">[Say new objective text]</span>}
+            {voiceContext === "AWAITING_EDIT_NOTE" && <span className="text-amber-500 font-bold mr-2">[Say new note text]</span>}
             &ldquo;{transcript}&rdquo;
           </div>
 
+          {/* ── Notes (editable) ── */}
           {activeTask.notes?.length > 0 && (
             <div className="mt-4 space-y-1.5">
               <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
                 Notes
               </h4>
               {activeTask.notes.map((n: string, i: number) => (
-                <p key={i} className="text-sm text-slate-600 flex items-start gap-2">
-                  <span className="text-rose-400 mt-0.5">•</span> {n}
-                </p>
+                <div key={i} className="group">
+                  {editingNoteIdx === i ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={editNoteValue}
+                        onChange={(e) => setEditNoteValue(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") saveNote(i); if (e.key === "Escape") setEditingNoteIdx(null); }}
+                        className="flex-grow bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-800 focus:outline-none focus:border-rose-500"
+                        autoFocus
+                      />
+                      <button onClick={() => saveNote(i)} className="text-emerald-600 p-1 rounded hover:bg-emerald-50">
+                        <Check className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => setEditingNoteIdx(null)} className="text-slate-400 p-1 rounded hover:bg-slate-100">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="text-sm text-slate-600 flex items-start gap-2 py-0.5">
+                      <span className="text-rose-400 mt-0.5 shrink-0">•</span>
+                      <span className="flex-grow break-words">{n}</span>
+                      <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 shrink-0 transition-opacity">
+                        <button
+                          onClick={() => { setEditingNoteIdx(i); setEditNoteValue(n); }}
+                          className="p-0.5 text-slate-400 hover:text-blue-500 rounded hover:bg-blue-50 transition-colors"
+                        >
+                          <Pencil className="w-3 h-3" />
+                        </button>
+                        <button
+                          onClick={() => onRemoveNote(i)}
+                          className="p-0.5 text-slate-400 hover:text-red-500 rounded hover:bg-red-50 transition-colors"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           )}
@@ -172,7 +332,7 @@ export default function DashboardTab({
           </button>
           <h2 className="text-xl font-bold text-slate-400 mb-1">{isSleeping ? "Sleeping..." : "No Active Context"}</h2>
           <p className="text-slate-500 text-sm mb-6">
-            {isSleeping ? "Say 'wake up' or 'hi krimsona' to resume." : "Click the microphone or say 'Start task' to begin."}
+            {isSleeping ? "Say 'wake up' or 'hey krimsona' to resume." : "Click the microphone or say 'Start task' to begin."}
           </p>
           <button
             onClick={onOpenStartModal}

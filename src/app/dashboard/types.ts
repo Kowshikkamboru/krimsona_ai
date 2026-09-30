@@ -15,7 +15,7 @@ export interface TaskProof {
 export interface Task {
   id: number;
   title: string;
-  description: string;
+  objectives: string[];
   start_time: string;
   end_time: string | null;
   duration: string;
@@ -30,7 +30,10 @@ export type VoiceContext =
   | "AWAITING_PLAN"
   | "AWAITING_NOTE"
   | "AWAITING_SUMMARY"
-  | "AWAITING_COMMIT";
+  | "AWAITING_COMMIT"
+  | "AWAITING_RENAME"
+  | "AWAITING_EDIT_NOTE"
+  | "AWAITING_EDIT_OBJECTIVE";
 
 export type TabName = "dashboard" | "timeline" | "memory_lane" | "exports";
 
