@@ -139,9 +139,10 @@ export default function DashboardTab({
           )}
 
           <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 font-mono text-slate-500 text-sm">
-            {voiceContext === "AWAITING_PLAN" && <span className="text-blue-500 font-bold mr-2">[Waiting for Plan]</span>}
-            {voiceContext === "AWAITING_NOTE" && <span className="text-amber-500 font-bold mr-2">[Waiting for Note]</span>}
-            {voiceContext === "AWAITING_SUMMARY" && <span className="text-emerald-500 font-bold mr-2">[Waiting for Summary]</span>}
+            {voiceContext === "AWAITING_PLAN" && <span className="text-blue-500 font-bold mr-2">[Waiting for Plan — say &quot;skip&quot; to skip]</span>}
+            {voiceContext === "AWAITING_NOTE" && <span className="text-amber-500 font-bold mr-2">[Waiting for Note — say &quot;cancel&quot; to cancel]</span>}
+            {voiceContext === "AWAITING_SUMMARY" && <span className="text-emerald-500 font-bold mr-2">[Describe what you accomplished]</span>}
+            {voiceContext === "AWAITING_COMMIT" && <span className="text-purple-500 font-bold mr-2">[Commit ID? — say &quot;skip&quot; to finish]</span>}
             &ldquo;{transcript}&rdquo;
           </div>
 
@@ -182,9 +183,11 @@ export default function DashboardTab({
           {isListening && (
             <p className={`mt-6 font-mono text-xs px-4 py-2 rounded-lg border ${isSleeping ? "text-slate-500 bg-slate-100 border-slate-200" : "text-rose-500 bg-rose-50 border-rose-100"}`}>
               {isSleeping ? (
-                "Zzz... (Listening for wake word)"
+                "Zzz... (Say \"wake up\" or \"hey krimsona\")"
               ) : voiceContext === "AWAITING_TITLE" ? (
-                <span className="text-blue-600 font-bold">Waiting for task title... (Say it now)</span>
+                <span className="text-blue-600 font-bold">What should the task be called? (Speak or type below)</span>
+              ) : voiceContext === "AWAITING_PLAN" ? (
+                <span className="text-blue-600 font-bold">What&apos;s the plan? (Say &quot;skip&quot; to continue)</span>
               ) : (
                 `Listening: ${transcript}`
               )}
