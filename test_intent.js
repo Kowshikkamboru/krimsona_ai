@@ -82,6 +82,4 @@ function testProcess(cmd) {
   console.log(`cmd: "${cmd}", wake: ${isWakePhrase}, sleep: ${isSleepPhrase}, intent: ${JSON.stringify(scoreIntent(cmd))}`);
 }
 
-testProcess("stop task");
-testProcess("stop the task");
-testProcess("finish the task");
+testProcess('create a task');

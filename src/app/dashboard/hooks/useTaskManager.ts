@@ -22,14 +22,25 @@ export function useTaskManager() {
     const savedTasks = JSON.parse(localStorage.getItem("krimsona_tasks") || "[]");
     const savedActive = JSON.parse(localStorage.getItem("krimsona_active") || "null");
     // Migrate legacy tasks: convert description string to objectives array
-    const migrateTasks = (list: any[]) => list.map((t: any) => {
-      if (t.description !== undefined && t.objectives === undefined) {
-        const obj = t.description ? [t.description] : [];
-        const { description, ...rest } = t;
-        return { ...rest, objectives: obj };
-      }
-      return t;
-    });
+    const migrateTasks = (list: any[]) => {
+      const seenIds = new Set();
+      return list.map((t: any) => {
+        // Fix duplicate IDs
+        let safeId = t.id;
+        while (seenIds.has(safeId)) {
+          safeId = Date.now() + Math.floor(Math.random() * 100000);
+        }
+        seenIds.add(safeId);
+        t.id = safeId;
+
+        if (t.description !== undefined && t.objectives === undefined) {
+          const obj = t.description ? [t.description] : [];
+          const { description, ...rest } = t;
+          return { ...rest, objectives: obj };
+        }
+        return t;
+      });
+    };
     setTasks(migrateTasks(savedTasks));
     if (savedActive) {
       const [migrated] = migrateTasks([savedActive]);
@@ -69,7 +80,7 @@ export function useTaskManager() {
   // ── Start ──
   const startTask = (title: string, plan = "") => {
     setActiveTask({
-      id: Math.floor(1000 + Math.random() * 9000),
+      id: Date.now(),
       title: title || "Untitled Task",
       objectives: plan ? [plan] : [],
       start_time: new Date().toISOString(),
@@ -116,6 +127,7 @@ export function useTaskManager() {
       const finalProof: TaskProof = { ...prev, commitId, attachmentName: attachedFile?.name };
       setTasks((prevTasks) => {
         if (!tempCompletedTask) return prevTasks;
+        if (prevTasks.some((t) => t.id === tempCompletedTask.id)) return prevTasks;
         return [{ ...tempCompletedTask, status: "Completed" as const, proof: finalProof }, ...prevTasks];
       });
       return finalProof;
@@ -127,7 +139,10 @@ export function useTaskManager() {
   const saveCompletedTask = () => {
     if (!tempCompletedTask) return;
     const finalProof: TaskProof = { ...proofData, attachmentName: attachedFile?.name };
-    setTasks((prev) => [{ ...tempCompletedTask, status: "Completed" as const, proof: finalProof }, ...prev]);
+    setTasks((prev) => {
+      if (prev.some((t) => t.id === tempCompletedTask.id)) return prev;
+      return [{ ...tempCompletedTask, status: "Completed" as const, proof: finalProof }, ...prev];
+    });
     setTempCompletedTask(null);
   };
 

@@ -42,7 +42,12 @@ function levenshtein(a: string, b: string): number {
 function fuzzyMatch(input: string, target: string, threshold = 0.35): boolean {
   const a = input.toLowerCase(), b = target.toLowerCase();
   if (a === b) return true;
-  if (a.includes(b) || b.includes(a)) return true;
+  
+  // Only allow substring match if the substring is reasonably long (e.g. >= 4 chars)
+  // to prevent a 1-letter word like "a" from matching everything.
+  const minLen = Math.min(a.length, b.length);
+  if (minLen >= 4 && (a.includes(b) || b.includes(a))) return true;
+
   const dist = levenshtein(a, b);
   const maxLen = Math.max(a.length, b.length);
   return maxLen > 0 && (dist / maxLen) <= threshold;
@@ -139,9 +144,11 @@ function extractPayloadAfterVerb(text: string, verbs: string[], nouns: string[])
 function extractPayloadAfterPhrase(text: string, phrases: string[]): string {
   let best = text;
   for (const p of phrases) {
-    const idx = text.toLowerCase().indexOf(p.toLowerCase());
-    if (idx >= 0) {
-      let after = text.slice(idx + p.length).trim();
+    const escaped = p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const flexRegex = new RegExp(escaped.split(/\s+/).join("\\s+(?:the\\s+|a\\s+|an\\s+)?"), "i");
+    const match = text.match(flexRegex);
+    if (match && match.index !== undefined) {
+      let after = text.slice(match.index + match[0].length).trim();
       // Strip leading "to" connector
       after = after.replace(/^to\s+/i, "");
       if (after.length < best.length || best === text) {
@@ -173,12 +180,15 @@ function scoreIntent(text: string): IntentResult {
   const cleaned = stripFillers(text);
   const lower = cleaned.toLowerCase();
   const tokens = cleaned.split(/\s+/);
+  
+  // Stripping articles makes phrase matching (like 'change the title') match 'change title' reliably
+  const textWithoutArticles = lower.replace(/\b(the|a|an)\b/gi, " ").replace(/\s+/g, " ").trim();
 
   // ── Check phrase-based intents first (higher priority) ──
 
   // Rename
   for (const p of RENAME_PHRASES) {
-    if (lower.includes(p) || fuzzyMatchAny(lower, [p], 0.25)) {
+    if (textWithoutArticles.includes(p) || fuzzyMatchAny(textWithoutArticles, [p], 0.25)) {
       const payload = extractPayloadAfterPhrase(lower, RENAME_PHRASES);
       return { intent: "RENAME", score: 10, payload };
     }
@@ -186,7 +196,7 @@ function scoreIntent(text: string): IntentResult {
 
   // Edit note (check before add note)
   for (const p of EDIT_NOTE_PHRASES) {
-    if (lower.includes(p) || fuzzyMatchAny(lower, [p], 0.25)) {
+    if (textWithoutArticles.includes(p) || fuzzyMatchAny(textWithoutArticles, [p], 0.25)) {
       const idx = extractNumberFromText(lower);
       const payload = extractPayloadAfterPhrase(lower, EDIT_NOTE_PHRASES);
       // Remove the number from payload
@@ -197,7 +207,7 @@ function scoreIntent(text: string): IntentResult {
 
   // Edit objective (check before add objective)
   for (const p of EDIT_OBJECTIVE_PHRASES) {
-    if (lower.includes(p) || fuzzyMatchAny(lower, [p], 0.25)) {
+    if (textWithoutArticles.includes(p) || fuzzyMatchAny(textWithoutArticles, [p], 0.25)) {
       const idx = extractNumberFromText(lower);
       const payload = extractPayloadAfterPhrase(lower, EDIT_OBJECTIVE_PHRASES);
       const cleanPayload = payload.replace(/^(#?\d+|one|two|three|four|five|first|second|third|fourth|fifth)\s*/i, "").trim();
@@ -207,7 +217,7 @@ function scoreIntent(text: string): IntentResult {
 
   // Add objective
   for (const p of ADD_OBJECTIVE_PHRASES) {
-    if (lower.includes(p) || fuzzyMatchAny(lower, [p], 0.25)) {
+    if (textWithoutArticles.includes(p) || fuzzyMatchAny(textWithoutArticles, [p], 0.25)) {
       const payload = extractPayloadAfterPhrase(lower, ADD_OBJECTIVE_PHRASES);
       return { intent: "ADD_OBJECTIVE", score: 10, payload };
     }
@@ -413,6 +423,15 @@ export function useVoiceEngine({
         }, 400);
       } else if (interimStr) {
         setTranscript(interimStr.trim());
+        // Fallback: if Chrome gets stuck on interim results, force process after 1.5s of silence
+        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = setTimeout(() => {
+          const text = interimStr.trim();
+          if (text) {
+            processCommandRef.current?.(text);
+            try { recognition.stop(); } catch {} // Forces a restart via onend
+          }
+        }, 1500);
       }
     };
 
